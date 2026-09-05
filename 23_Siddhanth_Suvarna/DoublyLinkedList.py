@@ -15,27 +15,43 @@
 
 
 """
+import inspect
 size = 0
 debug = 0
+head = None
+tail = None
 class ListNode:
-	def __init__(self, val: int):
+	def __init__(self, val: int, nextnode=None, prevnode=None):
 		self.value = val
-		self.next = None
-		self.prev =None
-def debugprint(nodepointer, loc: int):
+		if nextnode != None:
+			nextnode.prev = self
+			self.next = nextnode
+		else:
+			self.next = None
+		if prevnode != None:
+			prevnode.next = self
+			self.prev = prevnode
+		else:
+			self.prev =None
+def DebugPrint(nodepointer, loc=0):
 	nodenext = nodepointer.next
 	nodeprev = nodepointer.prev
 	if loc == -1:
 		try:
-			print("Prev:", nodeprev.value, "<--", nodepointer.value)
+			print(f"Prev: {nodeprev.value:5} <-- {nodepointer.value}")
 		except AttributeError:
-			print("AttributeError when checking prev value")
+			print("AttributeError when checking prev value.")
+	elif loc == 1:
+		try:
+			print(f"Next:\t\t{nodepointer.value} --> {nodenext.value}")
+		except AttributeError:
+			print("AttributeError when checking next value.")
 	else:
 		try:
-			print("Next:\t   ", nodepointer.value, "-->", nodenext.value)
+			print("Curr:\t   ", nodepointer.value)
 		except AttributeError:
-			print("AttributeError when checking next value")
-def nomatchmsg(flag):
+			print("AttributeError when checking current node value.")
+def NoMatchMsg(flag):
 	if flag == 0:
 		print("\nNo match found\n")
 def sizeincrement():
@@ -44,36 +60,41 @@ def sizeincrement():
 def sizedecrement():
 	global size
 	size -= 1
-def insertnodeatstart(val: int, head, tail):
-	newNode = ListNode(val)
-	newNode.next = head
-	if head != None:
-		if head.prev != None:
-			newNode.prev = head.prev
-		head.prev = newNode
-		if debug: 
-			debugprint(head, -1)
-			debugprint(head, 1)
-	if tail == None:
-		tail = newNode
-	head = newNode
+def assignhead(node):
+	global head
+	head = node
+def assigntail(node):
+	global tail
+	tail = node
+#Function to add node in front of specified node
+def InsertNodeInFront(val: int, before=None):
+	global head, tail
+	#If no node is passed, take head as default value
+	before = head if before is None else before
+	#If first arg is not None or the head, take note of the prev node
+	if before!=None and before.prev !=None: previous=before.prev
+	else: previous = None    #Required?
+	newNode = ListNode(val, before, previous)
+	if head == None or newNode.next == head: assignhead(newNode)
+	if tail == None: assigntail(newNode)
+	if debug: 
+		DebugPrint(before, -1)
+		DebugPrint(before, 1)
 	sizeincrement()
-	return head, tail
-def insertnodeatend(val: int, head, tail):
-	newNode = ListNode(val)
-	newNode.prev = tail
-	if tail != None:
-		if tail.next != None:
-			newNode.next = tail.next
-		tail.next = newNode
-		if debug: 
-			debugprint(head, -1)
-			debugprint(head, 1)
-	if head == None:
-		head = newNode
-	tail = newNode
+	return newNode
+def InsertNodeBehind(val: int, after=None):
+	global head, tail
+	after = tail if after is None else after
+	if after!=None and after.next !=None: nextnode=after.next
+	else: nextnode = None
+	newNode = ListNode(val, nextnode, after)
+	if head == None: assignhead(newNode)
+	if tail == None or newNode.prev == tail: assigntail(newNode)
+	if debug: 
+		DebugPrint(tail, -1)
+		DebugPrint(tail, 1)
 	sizeincrement()
-	return head, tail
+	return newNode
 def traverse(val, head):
 	curr = head
 	flag = 0
@@ -82,30 +103,37 @@ def traverse(val, head):
 			flag = 1
 			return curr
 		curr = curr.next
-	nomatchmsg(flag)
+	NoMatchMsg(flag)
 	return None
-def insertafterfirstfoundnode(insertval, val, head, tail):
+def insertafterfirstfoundnode(insertval, val):			#Wrong
 	curr = traverse(val, head)
+	if debug == 1: DebugPrint(curr)
 	if curr != None:
-		insertnodeatend(insertval, head, tail)
-# Below doesn't work rn, fix later
-#def insertafterlastfoundnode(insertval: int, val: int, head):
-#	curr, prev = traverse(val, head)
-#	while curr != None:
-#		newcurr = curr
-#		newprev = prev
-#		curr, prev=traverse(val, curr.next)
-#	temp=insertnodeatstart(insertval,head)
-#	temp.next=newcurr.next
-#	newcurr.next = temp
-def popnode_head(head):
-	nextnode = head
-	nextnextnode = nextnode.next
-	nextnextnode.prev = None
-	head = nextnode.next
+		x,y = InsertNodeBehind(insertval, head, curr)
+		temp = y.next
+		temp.prev = y
+def insertafterlastfoundnode(insertval: int, val: int, head): #Wrong
+	curr, prev = traverse(val, head)
+	while curr != None:
+		newcurr = curr
+		newprev = prev
+		curr, prev=traverse(val, curr.next)
+	temp=InsertNodeInFront(insertval,head)
+	temp.next=newcurr.next
+	newcurr.next = temp
+def popnode_head():
+	global head
+	if head == None:
+		print("Emply list, nothing to pop.")
+		return
+	nextnode = head.next
+	if nextnode != None:
+		nextnode.prev = None
+	assignhead(nextnode)
+	if nextnode == None:
+		assigntail(nextnode)
 	sizedecrement()
-	return head
-def displaylist(head, tail):
+def displaylist():
 	end = head
 	print("\nSTART")
 	while end != None:
@@ -139,7 +167,7 @@ def traverse_till_hit(val: int, head):
 		print(" v")
 		end = end.next
 	print("End")
-	nomatchmsg(flag)
+	NoMatchMsg(flag)
 def deletefirstfoundnode(val: int, head):
 		curr, prev = traverse(val, head)
 		traverse_till_hit(val, head)
@@ -152,7 +180,7 @@ def deletefirstfoundnode(val: int, head):
 		prev=curr			
 		curr = curr.next
 		print("End")
-		nomatchmsg(flag)
+		NoMatchMsg(flag)
 def deletelastfoundnode(val: int, head):
 		curr = head
 		lastmatch=None
@@ -166,8 +194,8 @@ def deletelastfoundnode(val: int, head):
 				flag=1 if flag != 1 else flag
 			prev=curr
 			curr = curr.next
-		nomatchmsg(flag)
-		if flag == 1:#displaylist_reverse(head, taihead, tail = insertnodeatstart(63, head, tail)l)
+		NoMatchMsg(flag)
+		if flag == 1:#displaylist_reverse(head, taihead, tail = InsertNodeInFront(63, head, tail)l)
 			lastmatchprev.next = lastmatch.next
 def deleteallnode(val: int, head):
 		curr = head
@@ -181,28 +209,40 @@ def deleteallnode(val: int, head):
 				flag=1			
 			curr = curr.next
 		print("End")
-		nomatchmsg(flag)
-def insertnode_multiple(l, end, head, tail):
+		NoMatchMsg(flag)
+def InsertMultipleNode(l, pos, InsertInGivenOrder = None, start =None):
+	global head, tail
+	start = head if start is None else start
 	try:
 		l=list(l)
-		for x in l:
-			head, tail = insertnodeatstart(x, head, tail) if end == 'Start' else insertnodeatend(x, head, tail)
+		newstart = InsertNodeInFront(l[0],start) if pos == 'Start' else InsertNodeBehind(l[0])
+		if InsertInGivenOrder != None:
+			for x in l[1:]:
+				newstart = InsertNodeBehind(x, newstart)
+		else:
+			for x in l[1:]:
+				newstart = InsertNodeInFront(x,newstart)
 	except TypeError:
 		print(type(l),"is not iterable.")
-	return head, tail
-head = None
-tail = None
-l1 = [1,2,31,11]
-head, tail = insertnode_multiple(l1, 'Start', head, tail)
-head, tail = insertnode_multiple([77], 'End', head, tail)
-head = popnode_head(head)
-head, tail = insertnode_multiple([89, 63], 'Start', head, tail)
-head,tail = insertnodeatend(55, head, tail)
+	return newstart
+l1 = [1,2,31,61]
+neww=InsertNodeInFront(100)
+InsertNodeInFront(150)
+InsertNodeInFront(200, neww)
+InsertNodeBehind(266)
+InsertNodeBehind(50,neww)
+InsertMultipleNode(l1, 'Start')
+InsertMultipleNode([77], 'End')
+#popnode_head()
+InsertMultipleNode([89, 63, 999, 888], 'Start', -1, neww)
+#InsertNodeBehind(2)
 #deleteallnode(7,head)
-#deletelastfoundnode(7,head)
+#deletelastfoundnode(2,head)
 #traverse_till_hit(5,head)
-insertafterfirstfoundnode(20,2,head, tail)
+#insertafterfirstfoundnode(20,2)
 #insertafterlastfoundnode(2,7,head)
-displaylist(head, tail)
+
+
+displaylist()
 #displaylist_reverse(head, tail)
-print(size)
+#print(size)
