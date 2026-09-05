@@ -1,0 +1,86 @@
+class Node:
+    def __init__(self, customer):
+        self.customer = customer
+        self.next = None
+
+
+class LL:
+    def __init__(self):
+        self.front = None
+        self.rear = None
+
+    def add(self, customer):
+        new_node = Node(customer)
+
+        if self.rear is None:
+            self.front = self.rear = new_node
+        else:
+            self.rear.next = new_node
+            self.rear = new_node
+
+    def delete(self):
+        if self.front is None:
+            return None
+
+        customer = self.front.customer
+        self.front = self.front.next
+
+        if self.front is None:
+            self.rear = None
+
+        return customer
+
+    def display(self):
+        if self.front is None:
+            print("Empty")
+            return
+
+        current = self.front
+        while current:
+            print(current.customer, end=" -> ")
+            current = current.next
+        print("None")
+
+
+def distribute_customers(customers):
+    truck_a = LL()
+    truck_b = LL()
+
+
+    for i, customer in enumerate(customers):
+        if i % 2 == 0:
+            truck_a.add(customer)
+        else:
+            truck_b.add(customer)
+
+    return truck_a, truck_b
+
+
+# Main program
+customers = []
+
+n = int(input("Enter number of customers: "))
+
+for i in range(n):
+    name = input(f"Enter customer {i + 1}: ")
+    customers.append(name)
+
+truck_a, truck_b = distribute_customers(customers)
+
+print("\nCustomers waiting for Truck A:")
+truck_a.display()
+
+print("\nCustomers waiting for Truck B:")
+truck_b.display()
+
+print("\n--- Serving Customers ---")
+
+while truck_a.front or truck_b.front:
+
+    if truck_a.front:
+        print("Truck A serves:", truck_a.delete())
+
+    if truck_b.front:
+        print("Truck B serves:", truck_b.delete())
+
+print("All customers served.")

@@ -1,0 +1,252 @@
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.prev = None
+        self.next = None
+
+
+class DoublyLinkedList:
+
+    def __init__(self):
+        self.head = None
+
+    def insert_at_beginning(self, data):
+        new_node = Node(data)
+
+        if self.head is None:
+            self.head = new_node
+            return
+
+        new_node.next = self.head
+        self.head.prev = new_node
+        self.head = new_node
+
+    def insert_at_end(self, data):
+        new_node = Node(data)
+
+        if self.head is None:
+            self.head = new_node
+            return
+
+        temp = self.head
+
+        while temp.next:
+            temp = temp.next
+
+        temp.next = new_node
+        new_node.prev = temp
+
+    def insert_at_position(self, data, position):
+        if position <= 0:
+            print("Invalid position")
+            return
+
+        if position == 1:
+            self.insert_at_beginning(data)
+            return
+
+        temp = self.head
+
+        for _ in range(position - 2):
+            if temp is None:
+                print("Position out of range")
+                return
+            temp = temp.next
+
+        if temp is None:
+            print("Position out of range")
+            return
+
+        new_node = Node(data)
+
+        new_node.next = temp.next
+        new_node.prev = temp
+
+        if temp.next:
+            temp.next.prev = new_node
+
+        temp.next = new_node
+
+    def delete_from_beginning(self):
+        if self.head is None:
+            print("List is empty")
+            return
+
+        temp = self.head
+        self.head = self.head.next
+
+        if self.head:
+            self.head.prev = None
+
+        del temp
+
+    def delete_from_end(self):
+        if self.head is None:
+            print("List is empty")
+            return
+
+        temp = self.head
+
+        if temp.next is None:
+            self.head = None
+            del temp
+            return
+
+        while temp.next:
+            temp = temp.next
+
+        temp.prev.next = None
+        del temp
+
+    def delete_from_position(self, position):
+        if self.head is None:
+            print("List is empty")
+            return
+
+        if position <= 0:
+            print("Invalid position")
+            return
+
+        if position == 1:
+            self.delete_from_beginning()
+            return
+
+        temp = self.head
+
+        for _ in range(position - 1):
+            if temp is None:
+                print("Position out of range")
+                return
+            temp = temp.next
+
+        if temp is None:
+            print("Position out of range")
+            return
+
+        if temp.next:
+            temp.next.prev = temp.prev
+
+        if temp.prev:
+            temp.prev.next = temp.next
+
+        del temp
+
+    def delete_by_value(self, value):
+        if self.head is None:
+            print("List is empty")
+            return
+
+        temp = self.head
+
+        while temp and temp.data != value:
+            temp = temp.next
+
+        if temp is None:
+            print("Value not found")
+            return
+
+        if temp == self.head:
+            self.delete_from_beginning()
+            return
+
+        if temp.next:
+            temp.next.prev = temp.prev
+
+        temp.prev.next = temp.next
+
+        del temp
+
+    def search(self, value):
+        temp = self.head
+        position = 1
+
+        while temp:
+            if temp.data == value:
+                print(f"{value} found at position {position}")
+                return
+
+            temp = temp.next
+            position += 1
+
+        print(f"{value} not found")
+
+    def display_forward(self):
+        if self.head is None:
+            print("List is empty")
+            return
+
+        temp = self.head
+
+        print("Forward:", end=" ")
+
+        while temp:
+            print(temp.data, end=" <-> ")
+            temp = temp.next
+
+        print("None")
+
+    def display_backward(self):
+        if self.head is None:
+            print("List is empty")
+            return
+
+        temp = self.head
+
+        while temp.next:
+            temp = temp.next
+
+        print("Backward:", end=" ")
+
+        while temp:
+            print(temp.data, end=" <-> ")
+            temp = temp.prev
+
+        print("None")
+
+    def count_nodes(self):
+        count = 0
+        temp = self.head
+
+        while temp:
+            count += 1
+            temp = temp.next
+
+        return count
+
+    def reverse(self):
+        current = self.head
+        temp = None
+
+        while current:
+            temp = current.prev
+            current.prev = current.next
+            current.next = temp
+            current = current.prev
+        if temp:
+            self.head = temp.prev
+
+
+dll = DoublyLinkedList()
+dll.insert_at_end(10)
+dll.insert_at_end(20)
+dll.insert_at_end(30)
+dll.display_forward()
+dll.display_backward()
+dll.insert_at_beginning(5)
+dll.display_forward()
+dll.insert_at_position(15, 3)
+dll.display_forward()
+dll.delete_from_beginning()
+dll.display_forward()
+dll.delete_from_end()
+dll.display_forward()
+dll.delete_from_position(2)
+dll.display_forward()
+dll.insert_at_end(40)
+dll.insert_at_end(50)
+dll.delete_by_value(40)
+dll.display_forward()
+dll.search(30)
+print("Number of nodes:", dll.count_nodes())
+dll.reverse()
+dll.display_forward()
