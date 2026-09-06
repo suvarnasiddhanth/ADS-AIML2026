@@ -1,17 +1,25 @@
 """Checklist											Completed
 	1. 			Display list								✓
 		1.1 	Display list in reverse  					✓
-	2. 			Insert					  					✗
+	2. 			Insert					  					✓
 		2.1 	Insert at the beginning 					✓
 		2.1.1 	Insert bulk at the beginning 				✓
 		2.2 	Insert at the end			 				✓
 		2.2.1 	Insert bulk at the end						✓
-		2.3 	Insert after given value					✗
-		2.3.1 	Insert bulk after given value				✗
-	3. 			Pop											✗
+		2.3 	Insert after given value					✓
+		2.3.1 	Insert bulk after given value				✓
+		2.4 	Insert after given value (reverse search)	✓
+		2.4.1 	Insert bulk after given value				✓
+		2.5		Insert at position							✓
+	3. 			Pop											✓
 		3.1 	Pop from the beginning						✓
-		3.2 	Pop from the end							✗
-	4. 			Traverse from beginning						✗
+		3.2 	Pop from the end							✓
+		3.3		Pop specified value							✓
+		3.3.1	Pop specified value (reverse search)		✓
+		3.4		Pop all instance of specified value			✓
+	4. 			Traverse									✓
+		4.1		Traverse from the beginning					✓
+		4.2		Traverse from the end						✓
 
 
 """
@@ -66,8 +74,8 @@ def assignhead(node):
 def assigntail(node):
 	global tail
 	tail = node
-#Function to add node in front of specified node
-def InsertNodeInFront(val: int, before=None):
+#Function to add node before specified node
+def InsertNodeBefore(val: int, before=None):
 	global head, tail
 	#If no node is passed, take head as default value
 	before = head if before is None else before
@@ -82,7 +90,8 @@ def InsertNodeInFront(val: int, before=None):
 		DebugPrint(before, 1)
 	sizeincrement()
 	return newNode
-def InsertNodeBehind(val: int, after=None):
+#Funttion to add node after specified node
+def InsertNodeAfter(val: int, after=None):
 	global head, tail
 	after = tail if after is None else after
 	if after!=None and after.next !=None: nextnode=after.next
@@ -95,7 +104,9 @@ def InsertNodeBehind(val: int, after=None):
 		DebugPrint(tail, 1)
 	sizeincrement()
 	return newNode
-def traverse(val, head):
+#Traverse list till required value is found
+def traverse(val):
+	global head
 	curr = head
 	flag = 0
 	while curr != None:
@@ -105,34 +116,51 @@ def traverse(val, head):
 		curr = curr.next
 	NoMatchMsg(flag)
 	return None
-def insertafterfirstfoundnode(insertval, val):			#Wrong
-	curr = traverse(val, head)
+def traverseReverse(val):
+	global tail
+	curr = tail
+	flag = 0
+	while curr != None:
+		if curr.value == val:
+			flag = 1
+			return curr
+		curr = curr.prev
+	NoMatchMsg(flag)
+	return None
+def InsertNodeAfterGivenValue(insertval, val, checkfromend=None):
+	curr = traverse(val) if checkfromend == None else traverseReverse(val)
 	if debug == 1: DebugPrint(curr)
 	if curr != None:
-		x,y = InsertNodeBehind(insertval, head, curr)
-		temp = y.next
-		temp.prev = y
-def insertafterlastfoundnode(insertval: int, val: int, head): #Wrong
-	curr, prev = traverse(val, head)
-	while curr != None:
-		newcurr = curr
-		newprev = prev
-		curr, prev=traverse(val, curr.next)
-	temp=InsertNodeInFront(insertval,head)
-	temp.next=newcurr.next
-	newcurr.next = temp
-def popnode_head():
+		if type(insertval) == int:
+			InsertNodeAfter(insertval, curr)
+		else:
+			InsertMultipleNode(insertval, 'End', -1, curr)
+def InsertNodeBeforeGivenValue(insertval, val, checkfromend=None):
+	curr = traverse(val) if checkfromend == None else traverseReverse(val)
+	if debug == 1: DebugPrint(curr)
+	if curr != None:
+		if type(insertval) == int:
+			InsertNodeBefore(insertval, curr.prev)
+		else:
+			InsertMultipleNode(insertval, 'Start', -1, curr)
+def PopNode(node):
 	global head
-	if head == None:
+	if node == None:
 		print("Emply list, nothing to pop.")
 		return
-	nextnode = head.next
+	elif type(node) != type(head):
+		print("Invalid argument for pop.")
+		return
+	prevnode = node.prev
+	nextnode = node.next
+	if prevnode != None:
+		prevnode.next = nextnode
 	if nextnode != None:
-		nextnode.prev = None
-	assignhead(nextnode)
-	if nextnode == None:
-		assigntail(nextnode)
+		nextnode.prev = prevnode
+	if head == node: assignhead(nextnode)
+	if tail == node: assigntail(prevnode)
 	sizedecrement()
+	print(f"{node.value} has been deleted.")
 def displaylist():
 	end = head
 	print("\nSTART")
@@ -153,8 +181,9 @@ def displaylist_reverse(head, tail):
 		print(" v")
 		end = end.prev
 	print("END\n")
-def traverse_till_hit(val: int, head):
-	end = head#displaylist_reverse(head, tail)
+def traverse_till_hit(val):
+	global head
+	end = head
 	flag=0
 	while end != None:
 		if end.value == val:
@@ -168,81 +197,83 @@ def traverse_till_hit(val: int, head):
 		end = end.next
 	print("End")
 	NoMatchMsg(flag)
-def deletefirstfoundnode(val: int, head):
-		curr, prev = traverse(val, head)
-		traverse_till_hit(val, head)
-		flag=0
-		if curr != None:
-			prev.next = curr.next
-			print(curr.value,"deleted.")
-			flag=1
-			return
-		prev=curr			
-		curr = curr.next
-		print("End")
-		NoMatchMsg(flag)
-def deletelastfoundnode(val: int, head):
-		curr = head
-		lastmatch=None
-		prev=None
-		traverse_till_hit(val, head)
-		flag=0
+def deletefirstfoundnode(val):
+		curr = traverse(val)
+		traverse_till_hit(val)
+		if curr != None: PopNode(curr)
+def deletelastfoundnode(val):
+		curr = traverseReverse(val)
+		traverse_till_hit(val)
+		if curr != None: PopNode(curr)
+def deleteallnode(val):
+		curr = traverse(val)
+		traverse_till_hit(val)
 		while curr != None:
-			if curr.value == val:
-				lastmatch=curr
-				lastmatchprev=prev
-				flag=1 if flag != 1 else flag
-			prev=curr
-			curr = curr.next
-		NoMatchMsg(flag)
-		if flag == 1:#displaylist_reverse(head, taihead, tail = InsertNodeInFront(63, head, tail)l)
-			lastmatchprev.next = lastmatch.next
-def deleteallnode(val: int, head):
-		curr = head
-		traverse_till_hit(val, head)
-		flag=0
-		while curr != None:
-			if curr.value == val:
-				previous = curr.prev
-				previous.next = curr.next
-				print(curr.value,"deleted.")
-				flag=1			
-			curr = curr.next
-		print("End")
-		NoMatchMsg(flag)
+			PopNode(curr)
+			curr = traverse(val)
+#Insert multiple nodes: (list of nodes to be added, Start or end, -1, node pointer)
 def InsertMultipleNode(l, pos, InsertInGivenOrder = None, start =None):
 	global head, tail
 	start = head if start is None else start
 	try:
 		l=list(l)
-		newstart = InsertNodeInFront(l[0],start) if pos == 'Start' else InsertNodeBehind(l[0])
+		newstart = InsertNodeBefore(l[0],start) if pos == 'Start' else InsertNodeAfter(l[0])
 		if InsertInGivenOrder != None:
 			for x in l[1:]:
-				newstart = InsertNodeBehind(x, newstart)
+				newstart = InsertNodeAfter(x, newstart)
 		else:
 			for x in l[1:]:
-				newstart = InsertNodeInFront(x,newstart)
+				newstart = InsertNodeBefore(x,newstart)
 	except TypeError:
 		print(type(l),"is not iterable.")
 	return newstart
+def InsertNodeAtPos(val, pos):
+	global head
+	curr = head
+	if pos > (size): 
+		print("Index out of bounds")
+		return
+	elif pos == size:
+		InsertNodeAfter(val)
+		return
+	counter = 0
+	while counter != pos:
+		curr = curr.next
+		counter += 1
+	InsertNodeBefore(val,curr)
+def DeleteNodeAtPos(pos):
+	global head
+	curr = head
+	if pos > (size): 
+		print("Index out of bounds")
+		return
+	counter = 0
+	while counter != pos:
+		curr = curr.next
+		counter += 1
+	PopNode(curr)
 l1 = [1,2,31,61]
-neww=InsertNodeInFront(100)
-InsertNodeInFront(150)
-InsertNodeInFront(200, neww)
-InsertNodeBehind(266)
-InsertNodeBehind(50,neww)
+neww=InsertNodeBefore(100)
+InsertNodeBefore(150)
+InsertNodeBefore(200, neww)
+InsertNodeAfter(266)
+InsertNodeAfter(50,neww)
 InsertMultipleNode(l1, 'Start')
 InsertMultipleNode([77], 'End')
-#popnode_head()
+PopNode(head)
 InsertMultipleNode([89, 63, 999, 888], 'Start', -1, neww)
-#InsertNodeBehind(2)
-#deleteallnode(7,head)
+PopNode(tail)
+InsertNodeAfter(2)
+InsertNodeBefore(2)
+#deleteallnode(2)
 #deletelastfoundnode(2,head)
 #traverse_till_hit(5,head)
-#insertafterfirstfoundnode(20,2)
-#insertafterlastfoundnode(2,7,head)
-
-
-displaylist()
+InsertNodeAfterGivenValue(20,2)
+InsertNodeBeforeGivenValue(l1,2,-1)
+InsertNodeAtPos(500,7)
+deletelastfoundnode(2)
+DeleteNodeAtPos(8)
+#displaylist()
+#traverse_till_hit(2)
 #displaylist_reverse(head, tail)
-#print(size)
+print(size)
