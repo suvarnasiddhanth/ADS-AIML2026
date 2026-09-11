@@ -80,39 +80,57 @@ class DoublyLinkedList:
         if current.next != None:
             current.next.prev = new_node
         current.next = new_node
+        print(f"Inserted {data} at position {position}.")
 
 
-my_list = DoublyLinkedList()
-my_list.insert(10)
-my_list.insert(20)
-my_list.insert(30)
-my_list.insert(40)
-my_list.update(20, 25)
-my_list.deletion(30)
-my_list.traversal()
+def main():
+    my_list = DoublyLinkedList()
 
-print("\n Insert in Middle ")
-my_list.insert_at_position(3, 99)
-my_list.traversal()  
+    while True:
+        print("\n----- DOUBLY LINKED LIST MENU -----")
+        print("1. Insert at end")
+        print("2. Insert at position")
+        print("3. Update a value")
+        print("4. Delete a value")
+        print("5. Traverse / Print list")
+        print("6. Exit")
 
-print("\n Insert at Head ")
-my_list.insert_at_position(1, 5)
-my_list.traversal()  
+        choice = input("Enter your choice (1-6): ")
 
-print("\n Insert at Tail ")
-my_list.insert_at_position(6, 50)
-my_list.traversal()  
+        if choice == "1":
+            data = input("Enter data to insert: ")
+            my_list.insert(data)
+            print(f"{data} inserted at the end.")
 
-print("\n Position Out of Range ")
-my_list.insert_at_position(100, 500)
+        elif choice == "2":
+            try:
+                position = int(input("Enter position: "))
+            except ValueError:
+                print("Position must be a number.")
+                continue
+            data = input("Enter data to insert: ")
+            my_list.insert_at_position(position, data)
 
-print("\n Invalid Position ")
-my_list.insert_at_position(0, 77)
+        elif choice == "3":
+            old_data = input("Enter the value to update: ")
+            new_data = input("Enter the new value: ")
+            my_list.update(old_data, new_data)
 
-print("\n Delete Head ")
-my_list.deletion(5)
-my_list.traversal()  
+        elif choice == "4":
+            target = input("Enter the value to delete: ")
+            my_list.deletion(target)
 
-print("\n Delete Tail ")
-my_list.deletion(50)
-my_list.traversal()     
+        elif choice == "5":
+            print("Current list:")
+            my_list.traversal()
+
+        elif choice == "6":
+            print("Exiting program. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice! Please enter a number between 1 and 6.")
+
+
+if __name__ == "__main__":
+    main()
