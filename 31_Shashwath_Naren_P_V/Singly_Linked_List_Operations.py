@@ -11,7 +11,7 @@ class Singly_Linked_List:
     def __init__(self):
         self.head = None
         
-    def insert_at_begining(self, data):
+    def insert_at_beginning(self, data):
         newNode = Node(data)
         newNode.next = self.head
         self.head = newNode
@@ -39,7 +39,7 @@ class Singly_Linked_List:
             return
         
         if index == 0:
-            self.insert_at_begining(data)
+            self.insert_at_beginning(data)
             return
 
         current = self.head
@@ -57,7 +57,7 @@ class Singly_Linked_List:
         current.next = newNode
 
         
-    def delete_from_begining(self):
+    def delete_from_beginning(self):
         if self.head is None:
             return "The List is empty"
         self.head = self.head.next
@@ -88,7 +88,7 @@ class Singly_Linked_List:
             return
 
         if index == 0:
-            self.delete_from_begining
+            self.delete_from_beginning
             return
 
         current = self.head
@@ -123,16 +123,16 @@ if __name__ == '__main__':
 print("Linked List Operations : ")
 print("\nCurrent Linked List :")
 List.traverse()
-print("\nInserting at the begining of the node : ")    
-List.insert_at_begining(10)
+print("\nInserting at the beginning of the node : ")    
+List.insert_at_beginning(10)
 List.traverse()
-List.insert_at_begining(20)
+List.insert_at_beginning(20)
 List.traverse()
-List.insert_at_begining(30)
+List.insert_at_beginning(30)
 List.traverse()
-List.insert_at_begining(40)
+List.insert_at_beginning(40)
 List.traverse()
-List.insert_at_begining(50)
+List.insert_at_beginning(50)
 
 
 
@@ -144,8 +144,8 @@ List.traverse()
 print("\nSearching through linked list : ")
 print(List.search(20),"\n")
 
-print("Deleting from the begining of the node : ")
-List.delete_from_begining()
+print("Deleting from the beginning of the node : ")
+List.delete_from_beginning()
 List.traverse()
 
 print("\nSearching through linked list : ")

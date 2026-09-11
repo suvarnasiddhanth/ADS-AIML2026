@@ -11,7 +11,7 @@ class Doubly_linked_list:
     def __init__(self):
         self.head = None 
 
-    def insert_at_begining(self, data):
+    def insert_at_beginning(self, data):
 
         newNode = Node(data)
 
@@ -37,7 +37,7 @@ class Doubly_linked_list:
 
     
         if index == 0:
-            self.insert_at_begining(data)
+            self.insert_at_beginning(data)
             return
         
         for _ in range(index - 1):
@@ -72,7 +72,7 @@ class Doubly_linked_list:
             newNode.prev = self.tail
             self.tail = newNode
 
-    def delete_from_begining(self):
+    def delete_from_beginning(self):
         if self.head is None:
             return "List is Empty"
 
@@ -96,7 +96,7 @@ class Doubly_linked_list:
             return "Index out of range"
             
         if index == 0:
-            self.delete_from_begining()
+            self.delete_from_beginning()
             return
         
         current = self.head
@@ -130,16 +130,6 @@ class Doubly_linked_list:
         self.tail = self.tail.prev
         self.tail.next = None
 
-    def search(self,data):
-        current = self.head
-        position = 0
-        while current:
-            if current.data == data:
-                return f"Value : '{data}' found at the position '{position}'"
-            current = current.next
-            position += 1
-        return f"Value {data} not found in the list"
-
     def traverse(self,reverse = False):
             current = self.tail if reverse else self.head
             while current:
@@ -157,20 +147,20 @@ print("Doubly Linked List Operations : ")
 print("Current Linked List : ")
 List.traverse()
 
-print("Inserting at the begining : ")
-List.insert_at_begining(50)
+print("Inserting at the beginning : ")
+List.insert_at_beginning(50)
 List.traverse()
-print("Inserting at the begining : ")
-List.insert_at_begining(40)
+print("Inserting at the beginning : ")
+List.insert_at_beginning(40)
 List.traverse()
-print("Inserting at the begining : ")
-List.insert_at_begining(30)
+print("Inserting at the beginning : ")
+List.insert_at_beginning(30)
 List.traverse()
-print("Inserting at the begining : ")
-List.insert_at_begining(20)
+print("Inserting at the beginning : ")
+List.insert_at_beginning(20)
 List.traverse()
-print("Inserting at the begining : ")
-List.insert_at_begining(10)
+print("Inserting at the beginning : ")
+List.insert_at_beginning(10)
 List.traverse()
 print("\nReverse Traversal : ")
 List.traverse(reverse = True)
@@ -183,15 +173,9 @@ print("\nInserting between the nodes : ")
 List.insert_at_middle(35, 2)
 List.traverse()
 
-print("\nSearching through linked list : ")
-print(List.search(50), "\n")
-
-print("\nDelete from the begining : ")
-List.delete_from_begining()
+print("\nDelete from the beginning : ")
+List.delete_from_beginning()
 List.traverse()
-
-print("\nSearching through linked list : ")
-print(List.search(10), "\n")
 
 print("\nDelete from the end : ")
 List.delete_from_end()

@@ -17,10 +17,8 @@ class LinkedList:
         truck2_tail = None
 
         while current != None:
-            # create copied node here
             copied=Node(current.data)
 
-        # decide truck using turn
             if turn==1:
                 if truck1_head==None:
                     truck1_head=copied
@@ -38,10 +36,8 @@ class LinkedList:
                     truck2_tail=copied
                 turn=1
 
-            # move current
             current=current.next
 
-            # return the two truck lists
         return truck1_head, truck2_head
 
     def insert(self,data):
@@ -83,26 +79,63 @@ class LinkedList:
                 current_truck2 = current_truck2.next
 
     
+def main():
+    my_list=LinkedList()
+    truck1=None
+    truck2=None
+    while True:
+        print("Menu")
+        print("1:insert person into queue")
+        print("2.print original queue")
+        print("3:divide queue into two trucks")
+        print("4:print truck 1")
+        print("5:print truct 2")
+        print("6:serve queue(both trucks)")
+        print("7:Exit")
 
-my_list = LinkedList()
+        choice = input("Enter your choice (1-7): ")
 
-my_list.insert(10)
-my_list.insert(20)
-my_list.insert(30)
-my_list.insert(40)
-my_list.insert(50)
-my_list.insert(60)
+        if choice == "1":
+            data = input("Enter data to insert: ")
+            my_list.insert(data)
+            print(f"{data} inserted successfully.")
 
-truck1, truck2 = my_list.divide_queue()
+        elif choice == "2":
+            print("Original Queue:")
+            my_list.print_list()
 
-print("Original Queue:")
-my_list.print_list()
+        elif choice == "3":
+            truck1, truck2 = my_list.divide_queue()
+            print("Queue divided into Truck 1 and Truck 2.")
 
-print("Truck 1:")
-LinkedList.print_from_head(truck1)
+        elif choice == "4":
+            print("Truck 1:")
+            if truck1 is None:
+                print("Truck 1 is empty. Divide the queue first (option 3).")
+            else:
+                LinkedList.print_from_head(truck1)
 
-print("Truck 2:")
-LinkedList.print_from_head(truck2)
+        elif choice == "5":
+            print("Truck 2:")
+            if truck2 is None:
+                print("Truck 2 is empty. Divide the queue first (option 3).")
+            else:
+                LinkedList.print_from_head(truck2)
 
-print("Serving order:")
-my_list.serve_queue(truck1, truck2)
+        elif choice == "6":
+            if truck1 is None and truck2 is None:
+                print("Trucks are empty. Divide the queue first (option 3).")
+            else:
+                print("Serving order:")
+                my_list.serve_queue(truck1, truck2)
+
+        elif choice == "7":
+            print("Exiting program. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice! Please enter a number between 1 and 7.")
+
+
+if __name__ == "__main__":
+    main()
