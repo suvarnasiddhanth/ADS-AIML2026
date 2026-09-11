@@ -1,81 +1,167 @@
-"""Checklist						Completed
-	1. Display list						✓
-	2. Display list in reverse  		✓
-	2. Insert at the beginning  		✓
-	2. Insert bulk at the beginning 	✓
-	3. Pop from the beginning			✓
-	4. Traverse from beginning			✗
+"""Checklist											Completed
+	1. 			Display list								✓
+		1.1 	Display list in reverse  					✓
+	2. 			Insert					  					✓
+		2.1 	Insert at the beginning 					✓
+		2.1.1 	Insert bulk at the beginning 				✓
+		2.2 	Insert at the end			 				✓
+		2.2.1 	Insert bulk at the end						✓
+		2.3 	Insert after given value					✓
+		2.3.1 	Insert bulk after given value				✓
+		2.4 	Insert after given value (reverse search)	✓
+		2.4.1 	Insert bulk after given value				✓
+		2.5		Insert at position							✓
+	3. 			Pop											✓
+		3.1 	Pop from the beginning						✓
+		3.2 	Pop from the end							✓
+		3.3		Pop specified value							✓
+		3.3.1	Pop specified value (reverse search)		✓
+		3.4		Pop all instance of specified value			✓
+	4. 			Traverse									✓
+		4.1		Traverse from the beginning					✓
+		4.2		Traverse from the end						✓
 
 
 """
+import inspect
+size = 0
 debug = 0
+head = None
+tail = None
 class ListNode:
-	def __init__(self, val: int):
+	def __init__(self, val: int, nextnode=None, prevnode=None):
 		self.value = val
-		self.next = None
-		self.prev =None
-def debugprint(nodepointer, loc: int):
+		if nextnode != None:
+			nextnode.prev = self
+			self.next = nextnode
+		else:
+			self.next = None
+		if prevnode != None:
+			prevnode.next = self
+			self.prev = prevnode
+		else:
+			self.prev =None
+def DebugPrint(nodepointer, loc=0):
 	nodenext = nodepointer.next
 	nodeprev = nodepointer.prev
 	if loc == -1:
 		try:
-			print("Prev:", nodeprev.value, "<--", nodepointer.value)
+			print(f"Prev: {nodeprev.value:5} <-- {nodepointer.value}")
 		except AttributeError:
-			print("AttributeError when checking prev value")
+			print("AttributeError when checking prev value.")
+	elif loc == 1:
+		try:
+			print(f"Next:\t\t{nodepointer.value} --> {nodenext.value}")
+		except AttributeError:
+			print("AttributeError when checking next value.")
 	else:
 		try:
-			print("Next:\t   ", nodepointer.value, "-->", nodenext.value)
+			print("Curr:\t   ", nodepointer.value)
 		except AttributeError:
-			print("AttributeError when checking next value")
-def nomatchmsg(flag):
+			print("AttributeError when checking current node value.")
+def NoMatchMsg(flag):
 	if flag == 0:
 		print("\nNo match found\n")
-def insertnodeatstart(val: int, head, tail):
-	newNode = ListNode(val)
-	newNode.next = head
-	if head != None:
-		head.prev = newNode
-		if debug: debugprint(head, -1)
-		if debug: debugprint(head, 1)
-	if tail == None:
-		tail = newNode
-	head = newNode
-	return head, tail
-def traverse(val, head, tail):
+def sizeincrement():
+	global size
+	size += 1
+def sizedecrement():
+	global size
+	size -= 1
+def assignhead(node):
+	global head
+	head = node
+def assigntail(node):
+	global tail
+	tail = node
+#Function to add node before specified node
+def InsertNodeBefore(val: int, before=None):
+	global head, tail
+	#If no node is passed, take head as default value
+	before = head if before is None else before
+	#If first arg is not None or the head, take note of the prev node
+	if before!=None and before.prev !=None: previous=before.prev
+	else: previous = None    #Required?
+	newNode = ListNode(val, before, previous)
+	if head == None or newNode.next == head: assignhead(newNode)
+	if tail == None: assigntail(newNode)
+	if debug: 
+		DebugPrint(before, -1)
+		DebugPrint(before, 1)
+	sizeincrement()
+	return newNode
+#Funttion to add node after specified node
+def InsertNodeAfter(val: int, after=None):
+	global head, tail
+	after = tail if after is None else after
+	if after!=None and after.next !=None: nextnode=after.next
+	else: nextnode = None
+	newNode = ListNode(val, nextnode, after)
+	if head == None: assignhead(newNode)
+	if tail == None or newNode.prev == tail: assigntail(newNode)
+	if debug: 
+		DebugPrint(tail, -1)
+		DebugPrint(tail, 1)
+	sizeincrement()
+	return newNode
+#Traverse list till required value is found
+def traverse(val):
+	global head
 	curr = head
-	prev = None
 	flag = 0
 	while curr != None:
 		if curr.value == val:
 			flag = 1
-			return curr, prev
-		prev = curr
+			return curr
 		curr = curr.next
-	nomatchmsg(flag)
-	return None, None
-def insertafterfirstfoundnode(insertval: int, val: int, head, tail):
-	curr, prev = traverse(val, head)
+	NoMatchMsg(flag)
+	return None
+def traverseReverse(val):
+	global tail
+	curr = tail
+	flag = 0
+	while curr != None:
+		if curr.value == val:
+			flag = 1
+			return curr
+		curr = curr.prev
+	NoMatchMsg(flag)
+	return None
+def InsertNodeAfterGivenValue(insertval, val, checkfromend=None):
+	curr = traverse(val) if checkfromend == None else traverseReverse(val)
+	if debug == 1: DebugPrint(curr)
 	if curr != None:
-		temp=insertnodeatstart(insertval,head)
-		temp.next=curr.next
-		curr.next = temp
-# Below doesn't work rn, fix later
-#def insertafterlastfoundnode(insertval: int, val: int, head):
-#	curr, prev = traverse(val, head)
-#	while curr != None:
-#		newcurr = curr
-#		newprev = prev
-#		curr, prev=traverse(val, curr.next)
-#	temp=insertnodeatstart(insertval,head)
-#	temp.next=newcurr.next
-#	newcurr.next = temp
-def popnode_head(head):
-	nextnode = head
-	nextnextnode = nextnode.next
-	nextnextnode.prev = None
-	head = nextnode.next
-	return head
-def displaylist(head, tail):
+		if type(insertval) == int:
+			InsertNodeAfter(insertval, curr)
+		else:
+			InsertMultipleNode(insertval, 'End', -1, curr)
+def InsertNodeBeforeGivenValue(insertval, val, checkfromend=None):
+	curr = traverse(val) if checkfromend == None else traverseReverse(val)
+	if debug == 1: DebugPrint(curr)
+	if curr != None:
+		if type(insertval) == int:
+			InsertNodeBefore(insertval, curr.prev)
+		else:
+			InsertMultipleNode(insertval, 'Start', -1, curr)
+def PopNode(node):
+	global head
+	if node == None:
+		print("Emply list, nothing to pop.")
+		return
+	elif type(node) != type(head):
+		print("Invalid argument for pop.")
+		return
+	prevnode = node.prev
+	nextnode = node.next
+	if prevnode != None:
+		prevnode.next = nextnode
+	if nextnode != None:
+		nextnode.prev = prevnode
+	if head == node: assignhead(nextnode)
+	if tail == node: assigntail(prevnode)
+	sizedecrement()
+	print(f"{node.value} has been deleted.")
+def displaylist():
 	end = head
 	print("\nSTART")
 	while end != None:
@@ -95,8 +181,9 @@ def displaylist_reverse(head, tail):
 		print(" v")
 		end = end.prev
 	print("END\n")
-def traverse_till_hit(val: int, head):
-	end = head#displaylist_reverse(head, tail)
+def traverse_till_hit(val):
+	global head
+	end = head
 	flag=0
 	while end != None:
 		if end.value == val:
@@ -109,66 +196,84 @@ def traverse_till_hit(val: int, head):
 		print(" v")
 		end = end.next
 	print("End")
-	nomatchmsg(flag)
-def deletefirstfoundnode(val: int, head):
-		curr, prev = traverse(val, head)
-		traverse_till_hit(val, head)
-		flag=0
-		if curr != None:
-			prev.next = curr.next
-			print(curr.value,"deleted.")
-			flag=1
-			return
-		prev=curr			
-		curr = curr.next
-		print("End")
-		nomatchmsg(flag)
-def deletelastfoundnode(val: int, head):
-		curr = head
-		lastmatch=None
-		prev=None
-		traverse_till_hit(val, head)
-		flag=0
+	NoMatchMsg(flag)
+def deletefirstfoundnode(val):
+		curr = traverse(val)
+		traverse_till_hit(val)
+		if curr != None: PopNode(curr)
+def deletelastfoundnode(val):
+		curr = traverseReverse(val)
+		traverse_till_hit(val)
+		if curr != None: PopNode(curr)
+def deleteallnode(val):
+		curr = traverse(val)
+		traverse_till_hit(val)
 		while curr != None:
-			if curr.value == val:
-				lastmatch=curr
-				lastmatchprev=prev
-				flag=1 if flag != 1 else flag
-			prev=curr
-			curr = curr.next
-		nomatchmsg(flag)
-		if flag == 1:#displaylist_reverse(head, taihead, tail = insertnodeatstart(63, head, tail)l)
-			lastmatchprev.next = lastmatch.next
-def deleteallnode(val: int, head):
-		curr = head
-		traverse_till_hit(val, head)
-		flag=0
-		while curr != None:
-			if curr.value == val:
-				previous = curr.prev
-				previous.next = curr.next
-				print(curr.value,"deleted.")
-				flag=1			
-			curr = curr.next
-		print("End")
-		nomatchmsg(flag)
-def insertnode_multiple(l, end, head, tail):
+			PopNode(curr)
+			curr = traverse(val)
+#Insert multiple nodes: (list of nodes to be added, Start or end, -1, node pointer)
+def InsertMultipleNode(l, pos, InsertInGivenOrder = None, start =None):
+	global head, tail
+	start = head if start is None else start
 	try:
 		l=list(l)
-		for x in l:
-			head, tail = insertnodeatstart(x, head, tail) if end == 'Start' else insertnodeatstart(x, head, tail)
+		newstart = InsertNodeBefore(l[0],start) if pos == 'Start' else InsertNodeAfter(l[0])
+		if InsertInGivenOrder != None:
+			for x in l[1:]:
+				newstart = InsertNodeAfter(x, newstart)
+		else:
+			for x in l[1:]:
+				newstart = InsertNodeBefore(x,newstart)
 	except TypeError:
 		print(type(l),"is not iterable.")
-	return head, tail
-head = None
-tail = None
-l1 = [1,2,31,11]
-head, tail = insertnode_multiple(l1, 'Start', head, tail)
-head = popnode_head(head)
-head, tail = insertnode_multiple([89, 63], 'Start', head, tail)
-#deleteallnode(7,head)
-#deletelastfoundnode(7,head)
+	return newstart
+def InsertNodeAtPos(val, pos):
+	global head
+	curr = head
+	if pos > (size): 
+		print("Index out of bounds")
+		return
+	elif pos == size:
+		InsertNodeAfter(val)
+		return
+	counter = 0
+	while counter != pos:
+		curr = curr.next
+		counter += 1
+	InsertNodeBefore(val,curr)
+def DeleteNodeAtPos(pos):
+	global head
+	curr = head
+	if pos > (size): 
+		print("Index out of bounds")
+		return
+	counter = 0
+	while counter != pos:
+		curr = curr.next
+		counter += 1
+	PopNode(curr)
+l1 = [1,2,31,61]
+neww=InsertNodeBefore(100)
+InsertNodeBefore(150)
+InsertNodeBefore(200, neww)
+InsertNodeAfter(266)
+InsertNodeAfter(50,neww)
+InsertMultipleNode(l1, 'Start')
+InsertMultipleNode([77], 'End')
+PopNode(head)
+InsertMultipleNode([89, 63, 999, 888], 'Start', -1, neww)
+PopNode(tail)
+InsertNodeAfter(2)
+InsertNodeBefore(2)
+#deleteallnode(2)
+#deletelastfoundnode(2,head)
 #traverse_till_hit(5,head)
-#insertafterlastfoundnode(2,7,head)
-#displaylist(head, tail)
-displaylist_reverse(head, tail)
+InsertNodeAfterGivenValue(20,2)
+InsertNodeBeforeGivenValue(l1,2,-1)
+InsertNodeAtPos(500,7)
+deletelastfoundnode(2)
+DeleteNodeAtPos(8)
+#displaylist()
+#traverse_till_hit(2)
+#displaylist_reverse(head, tail)
+print(size)

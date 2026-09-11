@@ -2,13 +2,13 @@ class Node:
     def __init__(self, data):
         self.data = data
         self.next = None
+        self.prev = None 
 
     def __repr__(self):
-
         return f"Node({self.data})"
 
 
-class linked_list:
+class linked_list: 
     def __init__(self):
         self.head = None
 
@@ -23,11 +23,12 @@ class linked_list:
     def insert_at_index(self, data, index):
         if index < 0 or index > len(self):
             raise ValueError("Index out of range")
-        
-        new_node = Node(data)
 
+        new_node = Node(data)
         if index == 0:
             new_node.next = self.head
+            if self.head:
+                self.head.prev = new_node
             self.head = new_node
             return
 
@@ -36,6 +37,10 @@ class linked_list:
             curr = curr.next
 
         new_node.next = curr.next
+        new_node.prev = curr
+
+        if curr.next:  
+            curr.next.prev = new_node
         curr.next = new_node
 
     def append(self, data):
@@ -47,28 +52,42 @@ class linked_list:
         while curr:
             nodes.append(str(curr.data))
             curr = curr.next
-        
+
         if not nodes:
             return "LinkedList[]"
-            
-        return " -> ".join(nodes) + " -> None"
-    def del_at(self,index):
-        if index < 0 or index >=len(self):
+
+
+        return "None <-> " + " <-> ".join(nodes) + " <-> None"
+
+    def del_at(self, index):
+        if index < 0 or index >= len(self):
             raise ValueError("index out of range")
-        if index==0:
-            self.head=self.head.next
+
+    
+        if index == 0:
+            self.head = self.head.next
+            if self.head:
+                self.head.prev = None
             return
-        curr=self.head
-        for _ in range(index-1):
-            curr=curr.next
-        curr.next=curr.next.next
+
+        
+        curr = self.head
+        for _ in range(index):  
+            curr = curr.next
+
+        curr.prev.next = curr.next
+        if curr.next:  
+            curr.next.prev = curr.prev
+
     def del_end(self):
-        self.del_at(len(self)-1)
+        self.del_at(len(self) - 1)
+
+
 def main():
-    print("--- 1. Initializing Linked List ---")
+    print("--- 1. Initializing Doubly Linked List ---")
     ll = linked_list()
-    print("Initial List:", ll)  # Uses __repr__
-    print("Initial Length:", len(ll))  # Uses __len__
+    print("Initial List:", ll)  
+    print("Initial Length:", len(ll)) 
     print()
 
     print("--- 2. Appending Elements ---")
@@ -80,42 +99,29 @@ def main():
     print()
 
     print("--- 3. Inserting at Specific Indices ---")
-    # Insert 5 at index 0 (Beginning)
     ll.insert_at_index(5, 0)
     print("After inserting 5 at index 0:", ll)
 
-    # Insert 15 at index 2 (Middle)
     ll.insert_at_index(15, 2)
     print("After inserting 15 at index 2:", ll)
 
-    # Insert 40 at index 5 (End via insert_at_index)
     ll.insert_at_index(40, len(ll))
     print("After inserting 40 at end:", ll)
     print("Current Length:", len(ll))
     print()
 
     print("--- 4. Deleting Elements ---")
-    # Delete at index 0 (Head deletion)
     ll.del_at(0)
     print("After deleting at index 0:", ll)
 
-    # Delete at index 2 (Middle deletion)
     ll.del_at(2)
     print("After deleting at index 2:", ll)
 
-    # Delete end element using del_end()
     ll.del_end()
     print("After calling del_end():", ll)
     print("Final Length:", len(ll))
     print()
 
-    print("--- 5. Handling Error Case ---")
-    try:
-        ll.del_at(100)  # Invalid index
-    except ValueError as e:
-        print("Caught expected error:", e)
-
 
 if __name__ == "__main__":
     main()
-    
