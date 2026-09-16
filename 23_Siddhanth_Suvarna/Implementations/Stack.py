@@ -42,9 +42,11 @@ print("Size of stack:",s.size())
 s.push("is")
 s.push("the secret.")
 s.push("secret")
-function_list = ["Push", "Pop", "Peek", "Size", "Display"]
+function_list = ["push", "pop", "peek", "size"]
 from tkinter import *
 from tkinter import ttk
+import subprocess
+import sys
 root = Tk()
 style = ttk.Style()
 style.configure("Custom.TFrame", background="light blue")
@@ -53,6 +55,10 @@ frm.grid()
 ttk.Label(frm, text="Stack", font="Calibri", background="light blue").grid(column=1,row=0, pady=15)
 for index, function in enumerate(function_list, start=1):
     ttk.Button(frm, text=function, command=root.destroy, padding=10, width=20).grid(column=1, row=index)
-ttk.Label(frm, text=s, font="Calibri", background="light blue").grid(column=1,row=index+3, pady=15)
-ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=index + 2, pady=10)
+ttk.Label(frm, text=s, font="Calibri", background="light blue").grid(column=1,row=index+4, pady=15)
+def run_project(file_path):
+    subprocess.Popen([sys.executable, str(file_path)], start_new_session=True)
+    root.destroy()
+ttk.Button(frm, text="Back", command=lambda path="index.py": run_project(path)).grid(column=1, row=index + 2, pady=10)
+ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=index + 3, pady=10)
 root.mainloop()
