@@ -99,7 +99,7 @@ def main():
             data = input("Enter data to insert: ")
             my_list.insert(data)
             print(f"{data} inserted successfully.")
-
+            
         elif choice == "2":
             print("Original Queue:")
             my_list.print_list()
@@ -130,7 +130,7 @@ def main():
                 my_list.serve_queue(truck1, truck2)
 
         elif choice == "7":
-            print("Exiting program. Goodbye!")
+            print("Exiting program. bye!")
             break
 
         else:

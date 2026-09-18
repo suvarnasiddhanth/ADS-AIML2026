@@ -125,7 +125,7 @@ def main():
             my_list.traversal()
 
         elif choice == "6":
-            print("Exiting program. Goodbye!")
+            print("Exiting program. Bye!")
             break
 
         else:
