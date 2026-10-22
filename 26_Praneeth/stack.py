@@ -1,8 +1,13 @@
 class stack:
-    def __init__(self):
+    def __init__(self, capacity):
         self.stack=[]
+        self.capacity=capacity
+
 
     def push(self, data):
+        if self.size==self.capacity:
+            print("Stack overflow")
+            return
         self.stack.append(data)
 
     def pop(self):

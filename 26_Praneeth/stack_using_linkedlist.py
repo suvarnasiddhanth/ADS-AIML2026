@@ -4,14 +4,17 @@ class Node:
         self.next=None
 
 class Stack:
-    def __init__(self):
+    def __init__(self, capacity):
         self.top=None
+        self.capacity=capacity
 
     def push(self, data):
-        new_node=Node(data)
-        if self.top is None:
-            self.top=new_node
+        if self.size()==self.capacity:
+            print("Stack overflow")
             return
+
+        new_node=Node(data)
+        
         new_node.next=self.top
         self.top=new_node
 
@@ -44,7 +47,7 @@ class Stack:
             temp=temp.next
         print("None")
 
-s=Stack()
+s=Stack(2)
 s.push(10)
 s.push(20)
 s.push(30)
