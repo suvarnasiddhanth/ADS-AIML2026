@@ -111,7 +111,7 @@ class Singly_Linked_List:
     def traverse(self):
         current = self.head
         while current: 
-            print(current.data, " <->", end = " ")
+            print(current.data, " ->", end = " ")
             current = current.next   
         print("None")
 
@@ -158,7 +158,7 @@ while(True):
             except ValueError:
                 print("Invalid index position. Returning to Menu.\n")
                 continue
-            List.insert_at_index(element, index)
+            List.delete_from_index(element, index)
         case 7 : 
             element = input("Enter an element to search in the Linked List : ")   
             print(List.search(element))
